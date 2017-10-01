@@ -1,6 +1,22 @@
 const tinyreq = require("tinyreq");
 const cheerio = require("cheerio");
 const fs = require("fs");
+const nodemailer = require('nodemailer');
+
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: '*',
+      pass: '*'
+    }
+});
+
+var mailOptions = {
+    from: '*',
+    to: '*',
+    subject: 'New listings from www.nya.boplats.se',
+    html: ''
+};
 
 // import data from file
 const data = require('./data.js');
@@ -28,6 +44,7 @@ function getNewListings(link) {
                     data.objects = object.count;
                     return false;
                 }
+
                 else {
                     let rent = one_listing[1];
                     let area = one_listing[2];
@@ -36,6 +53,19 @@ function getNewListings(link) {
                     let sqm = one_listing[5];
                     let rooms = one_listing[6];
                     let movein = one_listing[8] + " " + one_listing[7];
+
+                    var new_html = '<!DOCTYPE html><html><head><style>table{font-family: arial, sans-serif;border-collapse: collapse;width: 100%;}td, th {border: 1px solid #dddddd;text-align: left;padding: 8px;}tr:nth-child(even) {background-color: #dddddd;}</style></head><body>'+'<div><table><tr><th>Area</th><th>Street</th><th>Rent</th><th>SQM</th><th>Rooms</th></tr>'+'<tr><td>'+area+'</td><td>'+street+'</td><td>'+rent+'</td><td>'+sqm+'</td><td>'+rooms+'</td></tr></table></div></body></html>';
+                    
+                    mailOptions.html = new_html;
+
+                    transporter.sendMail(mailOptions, function(error, info){
+                        if (error) {
+                          console.log(error);
+                        } else {
+                          console.log('Email sent: ' + info.response);
+                        }
+                      });
+
                     return false;
                 }
             })
@@ -45,3 +75,27 @@ function getNewListings(link) {
         }
     });
 }
+
+
+
+ 
+    
+    
+    
+
+
+
+    
+    
+    
+
+
+
+    
+
+
+
+
+
+
+
